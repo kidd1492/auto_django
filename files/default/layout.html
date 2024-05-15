@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <ul class="sidebar">
+            <li onclick=hideSidebar()><a href="#"><img src="static/images/close_icon.png" id="close_icon"></a></li>
+            
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#" target="_blank">Wikipedia</a></li>
+            <li><a href="#">Translate</a></li>
+            <li><a href="#">Search Notes</a></li> 
+            <li onclick="showToolbar()"><a href="#">Tools</a></li>
+            <li><a href="#">Home</a></li>
+        </ul>
+
+        <ul>
+
+            <li><a href="#">Dashboard</a></li>
+            <li class="hideOnMobile"><a href="#" target="_blank">Wikipedia</a></li>
+            <li><a href="#">Translate</a></li>
+            <li class="hideOnMobile"><a href="#">Search Notes</a></li>
+            <li class="hideOnMobile"><a href="#">All Notes</a></li>
+            <li onclick="showToolbar()"><a href="#">Tools</a></li>
+            <li class="hideOnMobile"><a href="#">Logout</a></li>        
+            <li><a href="#">Home</a></li>   
+            <li onclick=showSidebar()><a href="#"><img src="static/images/menu.jpg" id="menu_icon"></a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {%% block body %%}
+
+        {%% endblock %%}
+    </div>
+    <script>
+        function showSidebar(){
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.display = 'flex';
+        }
+    
+        function hideSidebar(){
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.display = 'none';
+        }
+    
+    </script>
+</body>
+</html>
