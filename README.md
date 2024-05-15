@@ -30,6 +30,9 @@ This tool is a command-line utility that automates the setup of a new Django pro
 
   - If `app_type` is 'res', the program will copy `models.py`, update `admin.py`, and run migrations to create and set up the database.
 
+- To create an additional app with specific type:
+  - ./auto create_app app_type
+
 - To add a custom template to an app:
   - ./auto template app_name template_name
 
