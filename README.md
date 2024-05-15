@@ -1,7 +1,7 @@
 # Django Automation Tool
 
 ## Overview
-This tool is a command-line utility that automates the setup of a new Django project and app, streamlining the development process.
+This tool is a command-line utility that automates the setup of a new Django project and app, streamlining the development process. I created another branch that will allow the user to create a default app or an app with a database that is automatically created and registered in the admin section.
 
 ## Features
 - Sets up a new Django project with a virtual environment and installs Django.
