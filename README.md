@@ -1,21 +1,30 @@
 # Django Automation Tool
 
 ## Overview
-This tool is a command-line utility that automates the setup of a new Django project and app, streamlining the development process. I created another branch that will allow the user to create a default app or an app with a database that is automatically created and registered in the admin section.
+This tool is a command-line utility that automates the setup of a new Django project and app, streamlining the development process. I created the program in C and Python. I created another branch that will allow the user to create a default app or an app with a database that is automatically created and registered in the admin section.
 
 ## Features
-- Sets up a new Django project with a virtual environment and installs Django.
+Processes Automated: 
+- Sets up a new Django project directory django_app/
+- Steps in django_app/ creates virtual.
+- Activates venv
+- pip install django
 - Generates a new app with necessary directories for templates and static files.
 - Creates essential starter files like `style.css`, `layout.html`, and `index.html`.
 - Configures URL routing for the app.
 - Adds custom templates for different views.
+- Adds the app to the settings file.
+
 
 ## Getting Started
 1. Clone the repository.
+2. run the script then cd django_app/myproject, run python manage.py runserver
+3. go to server url 127.0.0:8000/app_name
+
+## C Usage
 2. Compile the C code using a C compiler (e.g., `gcc`).
 3. Run the compiled executable with the appropriate arguments.
 
-## Usage
 - To create a new Django project:
   - `./auto`
 - To create a new app within the project:
@@ -25,6 +34,10 @@ This tool is a command-line utility that automates the setup of a new Django pro
 - To create template:
   - `./auto template app_name template_name`
 
-
-
-  
+## Python Usage
+- Create project with app:
+  - `python auto_django.py app_name`
+- Create additional apps:
+  - `python auto_django.py create_app app_name`
+- Create a new template html
+  - `python auto_django.py template app_name template_name`
