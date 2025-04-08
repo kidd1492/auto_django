@@ -35,9 +35,12 @@ Processes Automated:
   - `./auto template app_name template_name`
 
 ## Python Usage
-- Create project with app:
+- Create project with app(Defult app with simple index layout css):
   - `python auto_django.py app_name`
+- Create project with app template["reservsation", "task"]
+- This will create a database migrate and install templates css admin register
+  - ex: `python auto_django.py task app_name`
 - Create additional apps:
-  - `python auto_django.py create_app app_name`
+  - `python auto_django.py add_app app_type`
 - Create a new template html
   - `python auto_django.py template app_name template_name`

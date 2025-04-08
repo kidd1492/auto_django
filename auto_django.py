@@ -5,27 +5,50 @@ original_dir = os.getcwd()
 
 def main():
     args = sys.argv
+    
     if len(args) == 1:
         create_project()
 
-    if len(args) == 2:
+    elif len(args) == 2:
         app_name = args[1]
         create_project()
         create_app(app_name)
-        app_files(app_name)
-        create_files(app_name)
+        app_files(app_name, "default")
         settings(app_name)
+        create_project_url(app_name)
 
-    if len(args) == 3:
-        function_call = args[1]
+    elif len(args) == 3:
+        app_types = ["reservation", "store", "inventory", "task"]
+        command = args[1]
         name = args[2]
-        if function_call == "create_app":
-            create_app(name)
-            app_files(name)
-            settings(name)
-            project_url(name)
 
-    if len(args) == 4:
+        if command == "add_app":  # NEW: Allow adding apps to an existing project
+            app_type = name
+            app_name = args[2]
+            if app_type in app_types:
+                create_app(app_name)
+                app_files(app_name, app_type)
+                settings(app_name)
+                project_url(app_name)
+                create_database(app_name, app_type)
+                print(f"App '{app_name}' added successfully to project!")
+            else:
+                print("Please Select One:")
+                for type in app_types:print(type)
+
+        elif command in app_types:
+            create_project()
+            create_app(name)
+            app_files(name, command)
+            settings(name)
+            create_project_url(name)
+            create_database(name, command)
+        else:
+            print("Please Select One:")
+            for type in app_types:print(type)       
+
+
+    elif len(args) == 4:
         function_call = args[1]
         name = args[2]
         template_name = args[3]
@@ -57,8 +80,23 @@ def create_app(app_name):
     os.makedirs(f"{app_name}/static/{app_name}", exist_ok=True)
     os.chdir(original_dir)
 
+   
+def create_project_url(app_name):
+    os.chdir("django_app/myproject")
+    url = os.path.join("myproject", "urls.py")
+    with open(url, "w") as  prourl_file: 
 
-def app_files(app_name):
+        prourl_file.write("from django.contrib import admin\n")
+        prourl_file.write("from django.urls import path, include\n\n")
+        prourl_file.write("urlpatterns = [\n")
+        prourl_file.write("    path('admin/', admin.site.urls),\n")
+        prourl_file.write(f"    path('{app_name}/', include('{app_name}.urls')),\n")
+        prourl_file.write("]\n")
+    os.chdir(original_dir)
+
+    
+def app_files(app_name, directory):
+    #index.html
     os.chdir("django_app/myproject")
     index = os.path.join(app_name, "templates", app_name, "index.html")
     with open(index, "w") as index_file:
@@ -66,35 +104,8 @@ def app_files(app_name):
         index_file.write("{% block body %}\n")
         index_file.write("    <h1>Index</h1>\n")
         index_file.write("{% endblock %}\n")
-    
-   
-    layout_path =  os.path.join(app_name, "templates", app_name, "layout.html")
-    with open(layout_path, "w") as layout_file:
-        
-        layout_file.write("{% load static %}\n\n")
-        layout_file.write("<!DOCTYPE html>\n")
-        layout_file.write("<html lang=\"en\">\n")
-        layout_file.write("<head>\n")
-        layout_file.write("    <meta charset=\"UTF-8\">\n")
-        layout_file.write("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
-        layout_file.write("    <link href=\"{% static '" + app_name + "/style.css' %}\" rel=\"stylesheet\">\n")
-        layout_file.write("    <title>{% block title %}{% endblock %}</title>\n")
-        layout_file.write("</head>\n")
-        layout_file.write("<body>\n")
-        layout_file.write("    {% block body %}\n")
-        layout_file.write("    \n")
-        layout_file.write("    {% endblock %}\n")
-        layout_file.write("</body>\n")
-        layout_file.write("</html>\n")
-    
-
-    css_file_path = os.path.join(app_name, 'static', app_name, 'style.css')
-    with open(css_file_path, "w") as css_file:
-        css_file.write("body {\n    background-color: green;\n}\n")
-
-
+       
     filepath = os.path.join(f'{app_name}', "urls.py")
-
     with open(filepath, "w") as url_file:
         #Write the Python code to the file
         url_file.write("from django.urls import path\n")
@@ -112,56 +123,53 @@ def app_files(app_name):
         view_file.write("def index(request):\n")
         view_file.write(f"    return render(request, '{app_name}/index.html')")
     os.chdir(original_dir)
+   
 
-    
-def create_files(app_name):
+    layout_path =  os.path.join("django_app", "myproject", app_name, "templates", app_name, "layout.html")
+    layout_file_to_copy = os.path.join(directory, "layout.html")
+    os.system(f"copy {layout_file_to_copy} {layout_path}")
+
+    copy_filepath = os.path.join("django_app", "myproject", app_name, "templates", app_name, "copy.html")
+    text = "    <link href=\"{% static '" + app_name + "/style.css' %}\" rel=\"stylesheet\">\n"
+    search_term = "<head>"
+    insert_line(layout_path, copy_filepath, search_term, text)
+
+    css_file_path = os.path.join("django_app", "myproject", app_name, 'static', app_name, 'style.css')
+    css_to_copy_file = os.path.join(directory, "style.css")
+    os.system(f"copy {css_to_copy_file} {css_file_path}")
+
+
+def create_database(app_name, directory):
+    models_to_copy_file = os.path.join(directory, "models.py")
+    models_destination = os.path.join("django_app", "myproject", app_name, "models.py")
+    os.system(f"copy {models_to_copy_file} {models_destination}")
+
+    admin_to_copy_file = os.path.join(directory, "admin.py")
+    admin_destination = os.path.join("django_app", "myproject", app_name, "admin.py")
+    os.system(f"copy {admin_to_copy_file} {admin_destination}")
+
     os.chdir("django_app/myproject")
-    url = os.path.join("myproject", "urls.py")
-    with open(url, "w") as  prourl_file: 
-
-        prourl_file.write("from django.contrib import admin\n")
-        prourl_file.write("from django.urls import path, include\n\n")
-        prourl_file.write("urlpatterns = [\n")
-        prourl_file.write("    path('admin/', admin.site.urls),\n")
-        prourl_file.write(f"    path('{app_name}/', include('{app_name}.urls')),\n")
-        prourl_file.write("]\n")
+    subprocess.run(['python', 'manage.py', 'makemigrations'])
+    subprocess.run(['python', 'manage.py', 'migrate'])
     os.chdir(original_dir)
 
 
 def settings(app_name):
-    os.chdir("django_app/myproject")
-    settings_path = os.path.join("myproject", "settings.py")
-    copy_path = os.path.join("myproject", "copy.py")
+    
+    filepath = os.path.join("django_app", "myproject", "myproject", "settings.py")
+    copy_filepath = os.path.join("django_app", "myproject", "myproject", "copy.py")
     search_term ="INSTALLED_APPS = ["
-
-    with open(settings_path, "r", encoding="UTF-8") as settings_file:
-        with open(copy_path, "w") as copy:
-            for line in settings_file:
-                copy.write(line)
-                if search_term in line:
-                    copy.write(f"    '{app_name}',\n")
- 
-    os.remove(settings_path)
-    os.rename(copy_path, settings_path)
-    os.chdir(original_dir)
-
+    text = f"    '{app_name}',\n"
+    insert_line(filepath, copy_filepath, search_term, text)
+    
 
 def project_url(app_name):
-    os.chdir("django_app/myproject")
+   
     search_term = "urlpatterns = ["
-    url_path = os.path.join("myproject", "urls.py")
-    copy_filepath = os.path.join("myproject", "copy.py")
-
-    with open(url_path, "r") as url_file:      
-        with open(copy_filepath, "w") as copy:
-            for line in url_file:
-                copy.write(line)
-                if search_term in line:
-                    copy.write(f"    path('{app_name}/', include('{app_name}.urls')),\n")
-              
-    os.remove(url_path)
-    os.rename(copy_filepath, url_path)
-    os.chdir(original_dir)
+    filepath = os.path.join("django_app", "myproject", "myproject", "urls.py")
+    copy_filepath = os.path.join("django_app", "myproject", "myproject", "copy.py")
+    text = f"    path('{app_name}/', include('{app_name}.urls')),\n"
+    insert_line(filepath, copy_filepath, search_term, text)
 
 
 def apps_url(app_name, template_name):
@@ -169,16 +177,8 @@ def apps_url(app_name, template_name):
     copy_filepath = os.path.join(app_name, "copy.txt")
     search_term = "urlpatterns = ["
     filepath = os.path.join(app_name, "urls.py")
-
-    with open(filepath, "r") as input_file:  
-        with open(copy_filepath, "w") as copy:
-            for line in input_file:
-                copy.write(line)
-                if search_term in line:
-                    copy.write(f"    path('{template_name}', views.{template_name}, name='{template_name}'),\n")
-
-    os.remove(filepath)
-    os.rename(copy_filepath, filepath)
+    text = f"    path('{template_name}', views.{template_name}, name='{template_name}'),\n"
+    insert_line(filepath, copy_filepath, search_term, text)
     os.chdir(original_dir)
 
 
@@ -199,6 +199,19 @@ def template(app_name, template_name):
     with open(filepath, "a") as views:
         views.write(f"\n\ndef {template_name}(request):\n")
         views.write(f"    return render(request, '{app_name}/{template_name}.html')")
+    os.chdir(original_dir)
+
+
+def insert_line(filepath, copy_filepath, search_term, text):
+    with open(filepath, "r") as input_file:  
+        with open(copy_filepath, "w") as copy:
+            for line in input_file:
+                copy.write(line)
+                if search_term in line:
+                    copy.write(text)
+
+    os.remove(filepath)
+    os.rename(copy_filepath, filepath) 
     os.chdir(original_dir)
 
 
